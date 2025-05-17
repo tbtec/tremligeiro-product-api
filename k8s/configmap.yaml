@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tremligeiro-config
+  namespace: tremligeiro
+data:
+  ENV: "dev"
+  PORT: "8080"
+  POSTGRES_DB: "tremligeiro_db"
+  POSTGRES_PORT: "5432"
+  POSTGRES_USER: "admin"
+  POSTGRES_HOST: "postgres.tremligeiro.svc.cluster.local"
+  PAYMENT_URL: "https://api.mercadopago.com/instore/orders/qr/seller/collectors/202978706/pos/SUC001POS001/qrs"
+  
