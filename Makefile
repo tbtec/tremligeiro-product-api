@@ -19,6 +19,9 @@ pre-build:
 build:
 	go build -o bin/${BINARY_NAME} -ldflags="-s -w" -tags appsec cmd/main.go
 
+build-ci:
+	go build -o bin/${BINARY_NAME} -ldflags="-s -w" -tags appsec cmd/main.go
+
 build-docker:
 	docker build -t tbtec/tremligeiro-product:1.0.0 .
 
