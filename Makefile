@@ -5,7 +5,11 @@ run:
 	go run cmd/main.go
 
 test:
-	go test -cover ./internal/... -coverpkg ./...
+	go test -race -count=1 ./internal/... -coverprofile=coverage.out
+
+test-coverage:
+	go test -cover ./internal/... -coverpkg ./... -coverprofile=coverage.out
+	go tool cover -html=coverage.out -o coverage.html
 
 pre-build:
 	go mod download
