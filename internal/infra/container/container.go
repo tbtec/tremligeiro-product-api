@@ -2,7 +2,9 @@ package container
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"log/slog"
 
 	"github.com/tbtec/tremligeiro/internal/env"
 	"github.com/tbtec/tremligeiro/internal/infra/database/mongodb"
@@ -36,10 +38,14 @@ func (container *Container) Start() error {
 		log.Fatalf("Erro ao conectar ao MongoDB: %v", err)
 	}
 
+	slog.InfoContext(context.Background(), fmt.Sprintf("container.TremLigeiroDB: %s", container.TremLigeiroDB.Name()))
+
+	slog.InfoContext(context.Background(), "repository.NewProductRepository")
 	container.ProductRepository = repository.NewProductRepository(container.TremLigeiroDB)
+	slog.InfoContext(context.Background(), "repository.NewCategoryRepository")
 	container.CategoryRepository = repository.NewCategoryRepository()
 
-	log.Println("Banco de dados:", container.TremLigeiroDB.Name())
+	slog.InfoContext(context.Background(), fmt.Sprintf("Database start: %s", container.TremLigeiroDB.Name()))
 
 	return nil
 }

@@ -4,7 +4,7 @@ metadata:
   name: tremligeiro
   namespace: tremligeiro
   labels:
-    app: tremligeiro
+    app: tremligeiro-product
     environment: "dev"
 spec:
   type: LoadBalancer
