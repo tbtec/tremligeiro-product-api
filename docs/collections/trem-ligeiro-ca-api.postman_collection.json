@@ -1,0 +1,776 @@
+{
+	"info": {
+		"_postman_id": "8abbae13-4f10-4f52-b6cd-d572c9b1e3b9",
+		"name": "trem-ligeiro-ca-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39452890",
+		"_collection_link": "https://trem-bo-tecnologia.postman.co/workspace/Trem-B%C3%A3o-Tecnologia-Workspace~10d507e1-6dc6-4a40-8242-d1c0476e36b9/collection/39452890-8abbae13-4f10-4f52-b6cd-d572c9b1e3b9?action=share&source=collection_link&creator=39452890"
+	},
+	"item": [
+		{
+			"name": "Create Customer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.response.to.have.jsonBody();",
+							"});",
+							"",
+							"pm.test(\"Save customerId\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.globals.set(\"customerId\", jsonData.id);",
+							"});",
+							"",
+							"pm.test(\"Save documentNumber\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.globals.set(\"documentNumber\", jsonData.documentNumber);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"function gerarCpfValido() {\r",
+							"    let cpf = '';\r",
+							"    \r",
+							"    // Gera os 9 primeiros dígitos aleatórios\r",
+							"    for (let i = 0; i < 9; i++) {\r",
+							"        cpf += Math.floor(Math.random() * 10).toString();\r",
+							"    }\r",
+							"\r",
+							"    // Calcula o 10º dígito (primeiro dígito verificador)\r",
+							"    let soma = 0;\r",
+							"    for (let i = 0; i < 9; i++) {\r",
+							"        soma += parseInt(cpf[i]) * (10 - i);\r",
+							"    }\r",
+							"    let primeiroDigito = (soma * 10) % 11;\r",
+							"    if (primeiroDigito === 10) primeiroDigito = 0;\r",
+							"    cpf += primeiroDigito;\r",
+							"\r",
+							"    // Calcula o 11º dígito (segundo dígito verificador)\r",
+							"    soma = 0;\r",
+							"    for (let i = 0; i < 10; i++) {\r",
+							"        soma += parseInt(cpf[i]) * (11 - i);\r",
+							"    }\r",
+							"    let segundoDigito = (soma * 10) % 11;\r",
+							"    if (segundoDigito === 10) segundoDigito = 0;\r",
+							"    cpf += segundoDigito;\r",
+							"\r",
+							"    return cpf;\r",
+							"}\r",
+							"\r",
+							"// Armazenar o CPF gerado na variável cpfValido\r",
+							"pm.variables.set(\"cpfValido\", gerarCpfValido());\r",
+							"\r",
+							"//--\r",
+							"\r",
+							"function gerarNomesAleatorios(qtd) {\r",
+							"    const nomes = [\r",
+							"        \"Ana\", \"Bruno\", \"Carlos\", \"Daniela\", \"Eduardo\",\r",
+							"        \"Fernanda\", \"Gabriel\", \"Helena\", \"Igor\", \"Juliana\",\r",
+							"        \"Lucas\", \"Mariana\", \"Nicolas\", \"Patrícia\", \"Ricardo\",\r",
+							"        \"Sofia\", \"Thiago\", \"Vanessa\", \"William\", \"Yasmin\"\r",
+							"    ];\r",
+							"\r",
+							"    const sobrenomes = [\r",
+							"        \"Silva\", \"Santos\", \"Oliveira\", \"Pereira\", \"Almeida\",\r",
+							"        \"Souza\", \"Lima\", \"Costa\", \"Rodrigues\", \"Martins\",\r",
+							"        \"Ribeiro\", \"Gomes\", \"Barbosa\", \"Alves\", \"Nogueira\"\r",
+							"    ];\r",
+							"\r",
+							"    let nomesGerados = [];\r",
+							"\r",
+							"    for (let i = 0; i < qtd; i++) {\r",
+							"        const nomeAleatorio = nomes[Math.floor(Math.random() * nomes.length)];\r",
+							"        const sobrenomeAleatorio = sobrenomes[Math.floor(Math.random() * sobrenomes.length)];\r",
+							"        nomesGerados.push(`${nomeAleatorio} ${sobrenomeAleatorio}`);\r",
+							"    }\r",
+							"\r",
+							"    return nomesGerados;\r",
+							"}\r",
+							"\r",
+							"// Defina a quantidade de nomes que deseja gerar\r",
+							"const quantidadeDeNomes = 1; // Altere esse valor conforme necessário\r",
+							"\r",
+							"// Armazenar os nomes gerados na variável 'nome'\r",
+							"pm.variables.set(\"nome\", gerarNomesAleatorios(quantidadeDeNomes).join(\", \"));\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Sofia Silva\",\n    \"documentNumber\": \"28245678580\",\n    \"email\": \"ssilva@gmail.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{tremligeiro-url}}/api/v1/customer",
+					"host": [
+						"{{tremligeiro-url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"customer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find Customer",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{tremligeiro-url}}/api/v1/customer?documentNumber={{documentNumber}}",
+					"host": [
+						"{{tremligeiro-url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"customer"
+					],
+					"query": [
+						{
+							"key": "documentNumber",
+							"value": "{{documentNumber}}",
+							"description": "CPF"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Product",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.response.to.have.jsonBody();",
+							"});",
+							"",
+							"pm.test(\"Save customerId\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.globals.set(\"productId\", jsonData.id);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Lasanha\",\n    \"description\": \"Muito bom22\",\n    \"categoryId\": 1,\n    \"amount\": 1.52\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{tremligeiro-url}}/api/v1/product",
+					"host": [
+						"{{tremligeiro-url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Product",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Lasanhao\",\n    \"description\": \"Bão demais\",\n    \"categoryId\": 2,\n    \"amount\": 22.13\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{tremligeiro-url}}/api/v1/product/:productId",
+					"host": [
+						"{{tremligeiro-url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"product",
+						":productId"
+					],
+					"variable": [
+						{
+							"key": "productId",
+							"value": "{{productId}}",
+							"description": "Identificação do produto no formato GUUID"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Product",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{tremligeiro-url}}/api/v1/product/:productId",
+					"host": [
+						"{{tremligeiro-url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"product",
+						":productId"
+					],
+					"variable": [
+						{
+							"key": "productId",
+							"value": "{{productId}}",
+							"description": "Identificação do produto no formato GUUID"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find Product",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{tremligeiro-url}}/api/v1/product?categoryId=2",
+					"host": [
+						"{{tremligeiro-url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"product"
+					],
+					"query": [
+						{
+							"key": "categoryId",
+							"value": "2",
+							"description": "Categoria do Produto (1, 2, 3 ou 4)"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.response.to.have.jsonBody();",
+							"});",
+							"",
+							"pm.test(\"Save customerId\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.globals.set(\"orderId\", jsonData.id);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"customerId\": \"{{customerId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{tremligeiro-url}}/api/v1/order",
+					"host": [
+						"{{tremligeiro-url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Checkout Order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.response.to.have.jsonBody();",
+							"});",
+							"",
+							"pm.test(\"Save customerId\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.globals.set(\"paymentId\", jsonData.metadata.paymentId);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"products\": [\n        {\n            \"productId\": \"{{productId}}\",\n            \"quantity\": 3\n        }\n    ],\n    \"metadata\": {\n        \"paymentWebhookUrl\": \"https://webhook.site/cf8d51c6-d90f-4bb9-bfea-f79724edddd4\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{tremligeiro-url}}/api/v1/order/:orderId/checkout",
+					"host": [
+						"{{tremligeiro-url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"order",
+						":orderId",
+						"checkout"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{orderId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find Order",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{tremligeiro-url}}/api/v1/order",
+					"host": [
+						"{{tremligeiro-url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find One Order",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{tremligeiro-url}}/api/v1/order/:orderId",
+					"host": [
+						"{{tremligeiro-url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"order",
+						":orderId"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{orderId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Order  Status",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"status\": \"IN_PREPARATION\"\n\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{tremligeiro-url}}/api/v1/order/:orderId",
+					"host": [
+						"{{tremligeiro-url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"order",
+						":orderId"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{orderId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Payment WebHook",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resource\": \"https://api.mercadolibre.com/merchant_orders/27425867371\",\n  \"topic\": \"merchant_order\",\n  \"status\": \"approved\",\n  \"paymentId\": \"{{paymentId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{tremligeiro-url}}/api/v1/payment/webhook",
+					"host": [
+						"{{tremligeiro-url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"payment",
+						"webhook"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ML - Checkout",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer TEST-1480205524490354-011621-4219c5ddffd83192bba2a02314a1401f-202978706"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"external_reference\": \"reference_12345\",\n  \"title\": \"Product order\",\n  \"description\": \"Purchase description.\",\n  \"notification_url\": \"https://webhook.site/cf8d51c6-d90f-4bb9-bfea-f79724edddd4\",\n  \"expiration_date\":\"2025-01-25T12:45:00.000-03:00\",\n  \"total_amount\": 100,\n  \"items\": [\n    {\n      \"sku_number\": \"A123K9191938\",\n      \"category\": \"marketplace\",\n      \"title\": \"Point Mini\",\n      \"description\": \"This is the Point Mini\",\n      \"unit_price\": 100,\n      \"quantity\": 1,\n      \"unit_measure\": \"unit\",\n      \"total_amount\": 100\n    }\n  ],\n  \"sponsor\": {\n    \"id\": 96469944\n  },\n  \"cash_out\": {\n    \"amount\": 0\n  }\n}"
+				},
+				"url": {
+					"raw": "https://api.mercadopago.com/instore/orders/qr/seller/collectors/202978706/pos/SUC001POS001/qrs",
+					"protocol": "https",
+					"host": [
+						"api",
+						"mercadopago",
+						"com"
+					],
+					"path": [
+						"instore",
+						"orders",
+						"qr",
+						"seller",
+						"collectors",
+						"202978706",
+						"pos",
+						"SUC001POS001",
+						"qrs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ML - Create POS",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer TEST-1480205524490354-011621-4219c5ddffd83192bba2a02314a1401f-202978706",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"category\": 5611203,\n  \"external_id\": \"SUC001POS001\",\n  \"external_store_id\": \"SUC001\",\n  \"fixed_amount\": true,\n  \"name\": \"First POS\",\n  \"store_id\": 65359123\n}"
+				},
+				"url": {
+					"raw": "https://api.mercadopago.com/pos",
+					"protocol": "https",
+					"host": [
+						"api",
+						"mercadopago",
+						"com"
+					],
+					"path": [
+						"pos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ML - Create Store",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer TEST-1480205524490354-011621-4219c5ddffd83192bba2a02314a1401f-202978706"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Sucursal Instore\",\n  \"business_hours\": {\n    \"monday\": [\n      {\n        \"open\": \"08:00\",\n        \"close\": \"12:00\"\n      }\n    ],\n    \"tuesday\": [\n      {\n        \"open\": \"09:00\",\n        \"close\": \"18:00\"\n      }\n    ]\n  },\n  \"external_id\": \"SUC001\",\n  \"location\": {\n    \"street_number\": \"0123\",\n    \"street_name\": \"Example Street Name.\",\n    \"city_name\": \"Uberlândia\",\n    \"state_name\": \"Minas Gerais\",\n    \"latitude\": -18.9158883,\n    \"longitude\": -48.2578584,\n    \"reference\": \"Near to Mercado Pago\"\n  }\n}"
+				},
+				"url": {
+					"raw": "https://api.mercadopago.com/users/202978706/stores",
+					"protocol": "https",
+					"host": [
+						"api",
+						"mercadopago",
+						"com"
+					],
+					"path": [
+						"users",
+						"202978706",
+						"stores"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ML - Merchant Orders",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer TEST-1480205524490354-011621-4219c5ddffd83192bba2a02314a1401f-202978706"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Sucursal Instore\",\n  \"business_hours\": {\n    \"monday\": [\n      {\n        \"open\": \"08:00\",\n        \"close\": \"12:00\"\n      }\n    ],\n    \"tuesday\": [\n      {\n        \"open\": \"09:00\",\n        \"close\": \"18:00\"\n      }\n    ]\n  },\n  \"external_id\": \"SUC001\",\n  \"location\": {\n    \"street_number\": \"0123\",\n    \"street_name\": \"Example Street Name.\",\n    \"city_name\": \"Uberlândia\",\n    \"state_name\": \"Minas Gerais\",\n    \"latitude\": -18.9158883,\n    \"longitude\": -48.2578584,\n    \"reference\": \"Near to Mercado Pago\"\n  }\n}"
+				},
+				"url": {
+					"raw": "https://api.mercadopago.com/merchant_orders/27431787854",
+					"protocol": "https",
+					"host": [
+						"api",
+						"mercadopago",
+						"com"
+					],
+					"path": [
+						"merchant_orders",
+						"27431787854"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Live",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{tremligeiro-url}}/live",
+					"host": [
+						"{{tremligeiro-url}}"
+					],
+					"path": [
+						"live"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
