@@ -47,7 +47,7 @@ func (repository *ProductRepository) FindOne(ctx context.Context, id string) (*m
 
 	err := repository.database.FindOne(ctx, bson.M{"id": id}).Decode(&product)
 	if err != nil {
-		log.Fatal(err)
+		//log.Fatal(err)
 		return nil, err
 	}
 

@@ -37,6 +37,7 @@ func New(container *container.Container, config env.Config) *HTTPServer {
 	//Product Routes
 	baseRouter.Post("/product", adapt(controller.NewProductCreateRestController(container)))
 	baseRouter.Get("/product", adapt(controller.NewProductFindByCategoryRestController(container)))
+	baseRouter.Get("/product/:productId", adapt(controller.NewProductFindOneRestController(container)))
 	baseRouter.Delete("/product/:productId", adapt(controller.NewProductDeleteByIdRestController(container)))
 	baseRouter.Put("/product/:productId", adapt(controller.NewProductUpdateByIdController(container)))
 
