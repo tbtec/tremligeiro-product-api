@@ -18,6 +18,8 @@ type Config struct {
 	DbName         string `env:"MONGO_DB"`
 	DbPort         int    `env:"MONGO_PORT"`
 	CollectionName string `env:"MONGO_COLLECTION"`
+	DbUrl          string `env:"MONGO_URL"`
+	DBUseUrl       bool   `env:"MONGO_USE_URL" envDefault:"false"`
 }
 
 func LoadEnvConfig() (Config, error) {

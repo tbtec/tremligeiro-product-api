@@ -38,3 +38,10 @@ func (presenter *ProductPresenter) BuildProductContentResponse(products []entity
 
 	return dto.ProductContent{Content: response}
 }
+
+func (presenter *ProductPresenter) BuildOneProductContentResponse(product entity.Product, category entity.Category) dto.Product {
+
+	response := presenter.BuildProductCreateResponse(product, category)
+
+	return response
+}
