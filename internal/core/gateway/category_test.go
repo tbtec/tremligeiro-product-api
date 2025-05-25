@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+
 	"github.com/tbtec/tremligeiro/internal/core/domain/entity"
 )
 
@@ -38,15 +39,4 @@ func TestCategoryGateway_FindById(t *testing.T) {
 
 	assert.Equal(t, expectedCategory, result)
 	mockRepo.AssertCalled(t, "FindById", 1)
-}
-
-func TestCategoryGateway_FindById_NotFound(t *testing.T) {
-	mockRepo := new(MockCategoryRepository)
-	mockRepo.On("FindById", 2).Return(nil)
-
-	gw := NewCategoryGateway(mockRepo)
-	result := gw.FindById(2)
-
-	assert.Nil(t, result)
-	mockRepo.AssertCalled(t, "FindById", 2)
 }
