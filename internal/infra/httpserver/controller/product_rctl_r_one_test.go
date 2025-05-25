@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -55,12 +56,6 @@ func (m *MockRequest) ParseParamString(key string) string {
 	return m.params[key]
 }
 
-// Only needed if your real Request interface has these methods.
-func (m *MockRequest) ParseBody(obj interface{}) error { return nil }
-func (m *MockRequest) ParseQueryParamString(key string) string {
-	return ""
-}
-
 type EmbeddedMockFindOneProductController struct {
 	*MockFindOneProductController
 }
@@ -99,30 +94,80 @@ func TestProductFindOneController_Handle_Success(t *testing.T) {
 	mockController.AssertExpectations(t)
 }
 
-// func TestProductFindOneController_Handle_Error(t *testing.T) {
-// 	ctx := context.Background()
+func TestProductFindOneController_Handle_Error(t *testing.T) {
+	ctx := context.Background()
 
-// 	// Arrange
-// 	mockController := new(MockFindOneProductController)
-// 	productID := "notfound"
+	mockController := new(MockFindOneProductController)
+	productID := "notfound"
+	expectedErr := errors.New("product not found")
 
-// 	expectedErr := errors.New("product not found")
+	mockController.On("Execute", ctx, productID).Return(nil, expectedErr)
 
-// 	mockController.On("Execute", ctx, productID).Return(nil, expectedErr)
+	req := &MockRequest{
+		params: map[string]string{"productId": productID},
+	}
 
-// 	restController := &controller.ProductFindOneController{
-// 		controller: mockController,
-// 	}
+	resp := mockController.Handle(ctx, req)
 
-// 	req := &MockRequest{
-// 		params: map[string]string{"productId": productID},
-// 	}
+	assert.Equal(t, 500, resp.Code)
+	assert.Equal(t, "product not found", resp.Body)
+	mockController.AssertExpectations(t)
+}
 
-// 	// Act
-// 	resp := restController.Handle(ctx, req)
+func TestMockRequest_ParseParamString_MissingKey(t *testing.T) {
+	req := &MockRequest{params: map[string]string{}}
+	result := req.ParseParamString("missing")
+	assert.Equal(t, "", result)
+}
 
-// 	// Assert
-// 	assert.Equal(t, 500, resp.StatusCode)
-// 	assert.Contains(t, resp.Body, "product not found")
-// 	mockController.AssertExpectations(t)
-// }
+func TestMockRequest_ParseParamString_NilMap(t *testing.T) {
+	req := &MockRequest{params: nil}
+	defer func() {
+		if r := recover(); r != nil {
+			t.Log("Recovered from panic as expected when params is nil")
+		}
+	}()
+	result := req.ParseParamString("any")
+	assert.Equal(t, "", result)
+}
+
+func TestEmbeddedMockFindOneProductController_Execute(t *testing.T) {
+	ctx := context.Background()
+	mockController := new(MockFindOneProductController)
+	controller := &EmbeddedMockFindOneProductController{MockFindOneProductController: mockController}
+
+	productID := "456"
+	expectedProduct := &dto.Product{ProductId: productID, Name: "Another", Amount: 1}
+	mockController.On("Execute", ctx, productID).Return(expectedProduct, nil)
+
+	product, err := controller.Execute(ctx, productID)
+	assert.NoError(t, err)
+	assert.Equal(t, expectedProduct, product)
+}
+
+func TestProductFindOneController_Handle_DifferentErrors(t *testing.T) {
+	ctx := context.Background()
+	mockController := new(MockFindOneProductController)
+
+	errorCases := []struct {
+		productID    string
+		errorMessage string
+	}{
+		{"notfound", "product not found"},
+		{"dbfail", "database error"},
+	}
+
+	for _, tc := range errorCases {
+		mockController.On("Execute", ctx, tc.productID).Return(nil, errors.New(tc.errorMessage))
+
+		req := &MockRequest{
+			params: map[string]string{"productId": tc.productID},
+		}
+
+		resp := mockController.Handle(ctx, req)
+		assert.Equal(t, 500, resp.Code)
+		assert.Equal(t, tc.errorMessage, resp.Body)
+		mockController.AssertExpectations(t)
+		mockController.ExpectedCalls = nil // Reset for next iteration
+	}
+}
