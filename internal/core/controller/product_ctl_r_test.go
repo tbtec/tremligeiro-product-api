@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/tbtec/tremligeiro/internal/core/controller"
 	"github.com/tbtec/tremligeiro/internal/core/domain/entity"
 	"github.com/tbtec/tremligeiro/internal/infra/container"
 	"github.com/tbtec/tremligeiro/internal/infra/database/model"
@@ -46,7 +45,7 @@ func TestFindProductController_Execute_Success(t *testing.T) {
 		CategoryRepository: categoryRepo,
 	}
 
-	controller := controller.NewFindProductController(container)
+	controller := NewFindProductController(container)
 
 	ctx := context.Background()
 	result, err := controller.Execute(ctx, 10)
@@ -75,7 +74,7 @@ func TestFindProductController_Execute_Error(t *testing.T) {
 		ProductRepository:  productRepo,
 		CategoryRepository: categoryRepo,
 	}
-	controller := controller.NewFindProductController(container)
+	controller := NewFindProductController(container)
 
 	ctx := context.Background()
 	_, err := controller.Execute(ctx, 10)

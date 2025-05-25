@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/tbtec/tremligeiro/internal/core/controller"
 	"github.com/tbtec/tremligeiro/internal/core/domain/entity"
 	"github.com/tbtec/tremligeiro/internal/dto"
 	"github.com/tbtec/tremligeiro/internal/infra/container"
@@ -36,7 +35,7 @@ func TestCreateProductController_Execute_Success(t *testing.T) {
 		CategoryRepository: categoryRepo,
 	}
 
-	controller := controller.NewCreateProductController(testContainer)
+	controller := NewCreateProductController(testContainer)
 
 	input := dto.CreateProduct{
 		Name:        "Product 1",
@@ -71,7 +70,7 @@ func TestCreateProductController_Execute_CategoryNotFound(t *testing.T) {
 		CategoryRepository: categoryRepo,
 	}
 
-	controller := controller.NewCreateProductController(testContainer)
+	controller := NewCreateProductController(testContainer)
 
 	input := dto.CreateProduct{
 		Name:        "Product 2",

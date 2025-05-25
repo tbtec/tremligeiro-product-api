@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/tbtec/tremligeiro/internal/core/controller"
 	"github.com/tbtec/tremligeiro/internal/infra/container"
 	"github.com/tbtec/tremligeiro/internal/infra/database/model"
 	"github.com/tbtec/tremligeiro/test/fixtures"
@@ -28,7 +27,7 @@ func TestDeleteProductController_Execute_Success(t *testing.T) {
 		ProductRepository: productRepo,
 	}
 
-	controller := controller.NewDeleteProductController(testContainer)
+	controller := NewDeleteProductController(testContainer)
 
 	id := "prod1"
 	result, err := controller.Execute(ctx, id)
@@ -49,7 +48,7 @@ func TestDeleteProductController_Execute_NotFound(t *testing.T) {
 		ProductRepository: productRepo,
 	}
 
-	controller := controller.NewDeleteProductController(testContainer)
+	controller := NewDeleteProductController(testContainer)
 
 	id := ""
 	result, err := controller.Execute(ctx, id)
