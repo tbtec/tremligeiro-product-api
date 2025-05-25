@@ -9,7 +9,7 @@ import (
 	"github.com/tbtec/tremligeiro/internal/core/domain/entity"
 	"github.com/tbtec/tremligeiro/internal/infra/container"
 	"github.com/tbtec/tremligeiro/internal/infra/database/model"
-	"github.com/tbtec/tremligeiro/test/fixtures"
+	"github.com/tbtec/tremligeiro/test/repository"
 )
 
 func TestFindProductController_Execute_Success(t *testing.T) {
@@ -20,7 +20,7 @@ func TestFindProductController_Execute_Success(t *testing.T) {
 	}
 	mockProducts := &mockProductsSlice
 
-	productRepo := &fixtures.MockProductRepo{
+	productRepo := &repository.MockProductRepo{
 		FindByCategoryFunc: func(ctx context.Context, categoryId int) (*[]model.Product, error) {
 			if categoryId == 10 {
 
@@ -31,7 +31,7 @@ func TestFindProductController_Execute_Success(t *testing.T) {
 		},
 	}
 
-	categoryRepo := &fixtures.MockCategoryRepo{
+	categoryRepo := &repository.MockCategoryRepo{
 		FindByIdFunc: func(id int) *entity.Category {
 			if id == 10 {
 				return &entity.Category{ID: 10, Name: "Category 10"}
@@ -58,13 +58,12 @@ func TestFindProductController_Execute_Success(t *testing.T) {
 
 func TestFindProductController_Execute_Error(t *testing.T) {
 
-	// Mock repositories
-	productRepo := &fixtures.MockProductRepo{
-		CreateFunc: func(ctx context.Context, p *model.Product) error {
+	productRepo := &repository.MockProductRepo{
+		CreateFunc: func(ctx context.Context, product *model.Product) error {
 			return nil
 		},
 	}
-	categoryRepo := &fixtures.MockCategoryRepo{
+	categoryRepo := &repository.MockCategoryRepo{
 		FindByIdFunc: func(id int) *entity.Category {
 			return nil
 		},

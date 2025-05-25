@@ -10,7 +10,7 @@ import (
 	"github.com/tbtec/tremligeiro/internal/core/domain/entity"
 	"github.com/tbtec/tremligeiro/internal/infra/container"
 	"github.com/tbtec/tremligeiro/internal/infra/database/model"
-	"github.com/tbtec/tremligeiro/test/fixtures"
+	"github.com/tbtec/tremligeiro/test/repository"
 )
 
 func TestFindOneProductController_Execute_Success_WithMock(t *testing.T) {
@@ -24,7 +24,7 @@ func TestFindOneProductController_Execute_Success_WithMock(t *testing.T) {
 		CreatedAt:   time.Now(),
 	}
 
-	productRepo := &fixtures.MockProductRepo{
+	productRepo := &repository.MockProductRepo{
 		FindOneFunc: func(ctx context.Context, id string) (*model.Product, error) {
 			if id == "prod1" {
 				return mockProduct, nil
@@ -33,7 +33,7 @@ func TestFindOneProductController_Execute_Success_WithMock(t *testing.T) {
 		},
 	}
 
-	categoryRepo := &fixtures.MockCategoryRepo{
+	categoryRepo := &repository.MockCategoryRepo{
 		FindByIdFunc: func(id int) *entity.Category {
 			if id == 1 {
 				return &entity.Category{ID: 1, Name: "Category 1"}
@@ -59,15 +59,14 @@ func TestFindOneProductController_Execute_Success_WithMock(t *testing.T) {
 
 func TestFindOneProductController_Execute_NotFound(t *testing.T) {
 
-	// Mock repositories
-	productRepo := &fixtures.MockProductRepo{
+	productRepo := &repository.MockProductRepo{
 		FindOneFunc: func(ctx context.Context, id string) (*model.Product, error) {
 
 			return nil, errors.New("not found")
 		},
 	}
 
-	categoryRepo := &fixtures.MockCategoryRepo{
+	categoryRepo := &repository.MockCategoryRepo{
 		FindByIdFunc: func(id int) *entity.Category {
 			return nil
 		},
