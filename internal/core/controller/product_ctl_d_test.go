@@ -8,13 +8,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/tbtec/tremligeiro/internal/infra/container"
 	"github.com/tbtec/tremligeiro/internal/infra/database/model"
-	"github.com/tbtec/tremligeiro/test/fixtures"
+	"github.com/tbtec/tremligeiro/test/repository"
 )
 
 func TestDeleteProductController_Execute_Success(t *testing.T) {
 	ctx := context.Background()
 
-	productRepo := &fixtures.MockProductRepo{
+	productRepo := &repository.MockProductRepo{
 		DeleteByIdFunc: func(ctx context.Context, id string) (*model.Product, error) {
 			if id == "prod1" {
 				return &model.Product{ID: "prod1"}, nil
@@ -38,7 +38,7 @@ func TestDeleteProductController_Execute_Success(t *testing.T) {
 func TestDeleteProductController_Execute_NotFound(t *testing.T) {
 	ctx := context.Background()
 
-	productRepo := &fixtures.MockProductRepo{
+	productRepo := &repository.MockProductRepo{
 		DeleteByIdFunc: func(ctx context.Context, id string) (*model.Product, error) {
 			return nil, errors.New("not found")
 		},
