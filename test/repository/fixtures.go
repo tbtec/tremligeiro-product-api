@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tbtec/tremligeiro/internal/core/domain/entity"
@@ -14,10 +15,15 @@ type MockProductRepo struct {
 	FindByCategoryFunc func(ctx context.Context, categoryId int) (*[]model.Product, error)
 	FindOneFunc        func(ctx context.Context, id string) (*model.Product, error)
 	UpdateByIdFunc     func(ctx context.Context, product *model.Product) error
+	ExecuteFunc        func(ctx context.Context, productId string) (string, error)
 }
 
 type MockCategoryRepo struct {
 	FindByIdFunc func(id int) *entity.Category
+}
+
+func (m *MockProductRepo) Execute(ctx context.Context, productId string) (string, error) {
+	return m.ExecuteFunc(ctx, productId)
 }
 
 func (m *MockCategoryRepo) FindById(id int) *entity.Category {
@@ -90,4 +96,29 @@ type MockProductRepoError struct{}
 
 func (m *MockProductRepoError) Create(ctx context.Context, p *model.Product) error {
 	return assert.AnError
+}
+
+func (m *MockProductRepoError) DeleteById(ctx context.Context, id string) (*model.Product, error) {
+	return nil, errors.New("erro ao deletar produto")
+}
+
+func (m *MockProductRepoError) FindByCategory(ctx context.Context, categoryId int) (*[]model.Product, error) {
+	return nil, nil
+}
+
+func (m *MockProductRepoError) FindOne(ctx context.Context, id string) (*model.Product, error) {
+	return nil, errors.New("not implemented")
+}
+
+func (m *MockProductRepoError) FindById(ctx context.Context, id int64) (*entity.Product, error) {
+	return nil, errors.New("erro ao buscar produto")
+}
+
+func (m *MockProductRepoError) FindAll(ctx context.Context) ([]*entity.Product, error) {
+	return nil, errors.New("erro ao buscar produtos")
+}
+
+// Add the missing UpdateById method to satisfy the IProductRepository interface
+func (m *MockProductRepoError) UpdateById(ctx context.Context, product *model.Product) error {
+	return errors.New("erro ao atualizar produto")
 }

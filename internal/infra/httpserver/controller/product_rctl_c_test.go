@@ -58,7 +58,6 @@ func TestProductCreateRestController_Handle_InvalidJSON(t *testing.T) {
 	container := newMockContainer()
 	ctrl := NewProductCreateRestController(container)
 
-	// Invalid JSON (not a valid dto.CreateProduct)
 	req := httpserver.Request{Body: []byte(`{invalid json}`)}
 
 	resp := ctrl.Handle(context.Background(), req)
@@ -70,9 +69,8 @@ func TestProductCreateRestController_Handle_MissingFields(t *testing.T) {
 	container := newMockContainer()
 	ctrl := NewProductCreateRestController(container)
 
-	// Missing required fields
 	input := map[string]interface{}{
-		"Name": "", // Name is empty
+		"Name": "",
 	}
 	inputBytes, _ := json.Marshal(input)
 	req := httpserver.Request{Body: inputBytes}
@@ -100,4 +98,29 @@ func TestProductCreateRestController_Handle_CategoryNotFound(t *testing.T) {
 
 	resp := ctrl.Handle(context.Background(), req)
 	assert.NotEqual(t, 200, resp.Code)
+}
+
+func TestProductCreateRestController_Handle_ExecuteError(t *testing.T) {
+	container := &container.Container{
+		ProductRepository:  &repository.MockProductRepoError{},
+		CategoryRepository: &repository.MockCategoryRepoInterface{},
+	}
+	ctrl := NewProductCreateRestController(container)
+
+	input := dto.CreateProduct{
+		Name:        "Test Product",
+		Description: "A sample",
+		CategoryId:  1,
+		Amount:      100.0,
+	}
+	inputBytes, _ := json.Marshal(input)
+	req := httpserver.Request{Body: inputBytes}
+
+	resp := ctrl.Handle(context.Background(), req)
+
+	assert.NotEqual(t, 200, resp.Code)
+
+	errMsg, ok := resp.Body.(httpserver.ErrorMessage)
+	assert.True(t, ok)
+	assert.Contains(t, errMsg.Error.Description, "Internal Server Error")
 }
