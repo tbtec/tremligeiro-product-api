@@ -9,7 +9,7 @@ data:
   MONGO_DB: "tremligeiro_product_db"
   MONGO_PORT: "27017"
   MONGO_USER: "admintremligeiro"
-  MONGO_HOST: "tremligeiro-product-db.cluster-cdnilrkxgmpa.us-east-1.docdb.amazonaws.com"
+  MONGO_HOST: ""
   MONGO_COLLECTION: "product"
   MONGO_USE_URL: "true"
 
