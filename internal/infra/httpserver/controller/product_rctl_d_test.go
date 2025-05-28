@@ -61,3 +61,22 @@ func TestProductDeleteController_Handle_RecordNotFound(t *testing.T) {
 
 	assert.Equal(t, httpserver.NotFound(errors.New("record not found")), resp)
 }
+
+func TestProductDeleteController_Handle_UnprocessableEntity(t *testing.T) {
+	container := &container.Container{
+		ProductRepository: &repository.MockProductRepo{
+			ExecuteFunc: func(ctx context.Context, productId string) (string, error) {
+				return "", assert.AnError
+			},
+			DeleteByIdFunc: func(ctx context.Context, id string) (*model.Product, error) {
+				return nil, errors.New("Unprocessable")
+			},
+		},
+	}
+	ctrl := NewProductDeleteByIdRestController(container)
+	req := httpserver.Request{Params: map[string]string{"productId": ""}}
+
+	resp := ctrl.Handle(context.Background(), req)
+
+	assert.Equal(t, 422, resp.Code)
+}

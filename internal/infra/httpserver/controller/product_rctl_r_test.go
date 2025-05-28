@@ -14,15 +14,6 @@ import (
 	"github.com/tbtec/tremligeiro/test/repository"
 )
 
-// Mock for FindProductController
-type mockFindProductController struct {
-	ExecuteFunc func(ctx context.Context, categoryId int) (interface{}, error)
-}
-
-func (m *mockFindProductController) Execute(ctx context.Context, categoryId int) (interface{}, error) {
-	return m.ExecuteFunc(ctx, categoryId)
-}
-
 func TestHandle_Success(t *testing.T) {
 
 	mockProductsSlice := []model.Product{
