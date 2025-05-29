@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/tbtec/tremligeiro/internal/core/domain/entity"
 	"github.com/tbtec/tremligeiro/internal/core/domain/usecase"
 	"github.com/tbtec/tremligeiro/internal/infra/container"
 	"github.com/tbtec/tremligeiro/internal/infra/database/model"
@@ -38,6 +39,57 @@ func TestBuildProductUpdateResponse(t *testing.T) {
 	assert.Equal(t, output.CategoryName, resp.Category.CategoryName)
 	assert.Equal(t, output.CreatedAt, resp.CreatedAt)
 	assert.Equal(t, output.UpdatedAt, resp.UpdatedAt)
+}
+
+func TestProductUpdateController_Handle_Success(t *testing.T) {
+
+	mockProduct := &model.Product{
+		ID:          "prod1",
+		Name:        "Product 1",
+		Description: "Description 1",
+		Amount:      100.0,
+		CategoryId:  1,
+		CreatedAt:   time.Now(),
+	}
+
+	container := &container.Container{
+
+		ProductRepository: &repository.MockProductRepo{
+
+			FindOneFunc: func(ctx context.Context, id string) (*model.Product, error) {
+				if id == "prod1" {
+					return mockProduct, nil
+				}
+				return nil, errors.New("not found")
+			},
+		},
+
+		CategoryRepository: &repository.MockCategoryRepo{
+			FindByIdFunc: func(id int) *entity.Category {
+				if id == 1 {
+					return &entity.Category{ID: 1, Name: "Category 1"}
+				}
+				return nil
+			},
+		},
+	}
+	ctrl := NewProductUpdateByIdController(container)
+
+	input := ProductUpdateRequest{
+		Name:        "Produto Teste",
+		Description: "Descrição",
+		CategoryId:  1,
+		Amount:      10.0,
+	}
+	inputBytes, _ := json.Marshal(input)
+	req := httpserver.Request{
+		Params: map[string]string{"productId": "prod1"},
+		Body:   inputBytes,
+	}
+
+	resp := ctrl.Handle(context.Background(), req)
+
+	assert.Equal(t, 200, resp.Code)
 }
 
 func TestProductUpdateController_Handle_ExecuteError(t *testing.T) {
