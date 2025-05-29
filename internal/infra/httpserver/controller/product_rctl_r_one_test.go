@@ -76,3 +76,21 @@ func TestProductFindOneController_Handle_Success(t *testing.T) {
 
 	assert.Equal(t, 200, resp.Code)
 }
+
+func TestProductFindOneController_Handle_Error(t *testing.T) {
+	container := &container.Container{
+		ProductRepository: &repository.MockProductRepo{
+			FindOneFunc: func(ctx context.Context, id string) (*model.Product, error) {
+				return nil, errors.New("not found")
+			},
+		},
+	}
+	ctrl := NewProductFindOneRestController(container)
+
+	req := httpserver.Request{
+		Params: map[string]string{"productId": "prod1"},
+	}
+	resp := ctrl.Handle(context.Background(), req)
+
+	assert.NotEqual(t, 200, resp.Code)
+}
